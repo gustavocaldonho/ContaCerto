@@ -5,9 +5,11 @@ import { Picker } from "@react-native-picker/picker";
 import styles from "./style";
 import BoxHilight from "./src/componentes/BoxHilight";
 import BoxMinusPlus from "./src/componentes/BoxMinusPlus";
+import ModalProduto from "./src/componentes/Modal";
 
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,9 +48,19 @@ export default function App() {
           <Text style={styles.textEdit}>Editar</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.buttonAdd}>
+      <TouchableOpacity
+        style={styles.buttonAdd}
+        onPress={() => {
+          setModalVisible(true);
+        }}
+      >
         <Text style={styles.textAdd}>Adicionar Produto</Text>
       </TouchableOpacity>
+
+      <ModalProduto
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
     </SafeAreaView>
   );
 }

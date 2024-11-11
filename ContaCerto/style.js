@@ -9,9 +9,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 40,
+    fontSize: 35,
     fontWeight: "700",
     color: "#117E6C",
+    marginVertical: 10,
   },
   picker: {
     width: "100%",
@@ -46,13 +47,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
     borderRadius: 100,
-    borderWidth: 2,
-    borderColor: "#00A368",
-    backgroundColor: "#B2F5EA",
+    backgroundColor: "#00A368",
   },
   textAdd: {
     fontSize: 20,
-    color: "#006D3A",
+    color: "#fff",
   },
   boxHighlight: {
     flex: 1,
