@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, View, SafeAreaView, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Picker } from "@react-native-picker/picker";
@@ -8,15 +8,12 @@ import BoxMinusPlus from "./src/componentes/BoxMinusPlus";
 import ModalProduto from "./src/componentes/Modal";
 
 export default function App() {
-  const [selectedProduct, setSelectedProduct] = useState("");
-  const [produto, setProduto] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [produtoSelected, setProdutoSelected] = useState({});
   const [listProdutos, setListProdutos] = useState([
     {
       id: 1,
       nome: "Picolé Simples",
-      estoque: 7,
+      estoque: 10,
       qtdVendida: 3,
       custo: 1.0,
       valorFinal: 1.5,
@@ -38,14 +35,71 @@ export default function App() {
       valorFinal: 5.0,
     },
   ]);
+  const [selectedProduct, setSelectedProduct] = useState(
+    listProdutos[0]?.nome || ""
+  );
+  const [produto, setProduto] = useState(listProdutos[0] || {});
 
   const setarProduto = (itemValue) => {
-    for (p of listProdutos) {
-      if (itemValue === p.nome) {
-        setProduto(p);
-      }
+    const produtoSelecionado = listProdutos.find((p) => p.nome === itemValue);
+    setProduto(produtoSelecionado || {});
+  };
+
+  const atualizarEstoque = (novaQtdVendida) => {
+    if (produto && novaQtdVendida >= 0) {
+      const estoqueAlterado =
+        produto.qtdVendida > novaQtdVendida
+          ? produto.estoque + 1
+          : produto.estoque - 1;
+
+      const produtoAtualizado = {
+        ...produto,
+        qtdVendida: novaQtdVendida,
+        estoque: Math.max(0, estoqueAlterado),
+      };
+
+      setProduto(produtoAtualizado);
+
+      setListProdutos((prevProdutos) =>
+        prevProdutos.map((p) =>
+          p.id === produtoAtualizado.id ? produtoAtualizado : p
+        )
+      );
     }
   };
+
+  const atualizarProduto = (produtoAtualizado) => {
+    setListProdutos((prevProdutos) => {
+      const existeProduto = prevProdutos.find(
+        (p) => p.id === produtoAtualizado.id
+      );
+      return existeProduto
+        ? prevProdutos.map((p) =>
+            p.id === produtoAtualizado.id ? produtoAtualizado : p
+          )
+        : [
+            ...prevProdutos,
+            { ...produtoAtualizado, id: prevProdutos.length + 1 },
+          ];
+    });
+    setSelectedProduct(produtoAtualizado.nome);
+    setarProduto(produtoAtualizado.nome);
+  };
+
+  const calcularLucro = () =>
+    produto?.qtdVendida * (produto?.valorFinal - produto?.custo) || 0;
+  const calcularLucroPercentual = () =>
+    produto ? ((produto.valorFinal - produto.custo) / produto.custo) * 100 : 0;
+  const calcularFaturamento = () =>
+    produto?.qtdVendida * produto?.valorFinal || 0;
+  const calcularDespesa = () => produto?.qtdVendida * produto?.custo || 0;
+
+  useEffect(() => {
+    if (produto) {
+      calcularFaturamento();
+      calcularLucro();
+    }
+  }, [produto]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,43 +108,52 @@ export default function App() {
 
       <Picker
         selectedValue={selectedProduct}
-        onValueChange={(itemValue, itemIndex) => {
+        onValueChange={(itemValue) => {
           setSelectedProduct(itemValue);
           setarProduto(itemValue);
         }}
         style={styles.picker}
       >
-        {listProdutos.map((produto, index) => (
-          <Picker.Item key={index} label={produto.nome} value={produto.nome} />
+        {listProdutos.map((produto) => (
+          <Picker.Item
+            key={produto.id}
+            label={produto.nome}
+            value={produto.nome}
+          />
         ))}
       </Picker>
 
       <View style={styles.boxLine}>
         <BoxHilight value={produto.estoque} description={"Estoque"} />
-        <BoxMinusPlus value={produto.qtdVendida} description={"Qtd. Vendida"} />
+        <BoxMinusPlus
+          estoque={produto.estoque}
+          value={produto.qtdVendida}
+          description={"Qtd. Vendida"}
+          maxValue={produto.estoque}
+          onIncrease={() => atualizarEstoque(produto.qtdVendida + 1)}
+          onDecrease={() => atualizarEstoque(produto.qtdVendida - 1)}
+        />
       </View>
       <View style={styles.boxLine}>
         <BoxHilight value={produto.custo} description={"Custo"} />
         <BoxHilight value={produto.valorFinal} description={"Valor Final"} />
       </View>
       <View style={styles.boxLine}>
+        <BoxHilight value={calcularLucro()} description={"Lucro"} />
         <BoxHilight
-          value={produto.valorFinal - produto.custo}
-          description={"M. de Lucro"}
+          value={`${calcularLucroPercentual().toFixed(2)}%`}
+          description={"Lucro (%)"}
         />
-        <BoxHilight value={"50%"} description={"M. Lucro (%)"} />
       </View>
       <View style={styles.boxLine}>
-        <BoxHilight value={"7,25"} description={"Despesa"} />
-        <BoxHilight value={"4,75"} description={"Lucro"} />
+        <BoxHilight value={calcularDespesa()} description={"Despesa"} />
+        <BoxHilight value={calcularLucro()} description={"Lucro Total"} />
       </View>
       <View style={styles.boxLine}>
-        <BoxHilight value={"12,00"} description={"Faturamento"} />
+        <BoxHilight value={calcularFaturamento()} description={"Faturamento"} />
         <TouchableOpacity
           style={styles.buttonEdit}
-          onPress={() => {
-            setModalVisible(true);
-          }}
+          onPress={() => setModalVisible(true)}
         >
           <Text style={styles.textEdit}>Editar</Text>
         </TouchableOpacity>
@@ -99,6 +162,7 @@ export default function App() {
         style={styles.buttonAdd}
         onPress={() => {
           setModalVisible(true);
+          setProduto({});
         }}
       >
         <Text style={styles.textAdd}>Adicionar Produto</Text>
@@ -110,6 +174,7 @@ export default function App() {
         listProdutos={listProdutos}
         setListProdutos={setListProdutos}
         produto={produto}
+        atualizarProduto={atualizarProduto}
       />
     </SafeAreaView>
   );
