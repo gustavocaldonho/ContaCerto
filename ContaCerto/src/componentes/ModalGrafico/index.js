@@ -11,15 +11,24 @@ export default function ModalProduto({
   produto,
 }) {
   const screenWidth = Dimensions.get("window").width;
+  const custoFixo = 100;
 
   // Parâmetro de aumento de custo com quantidade vendida para função quadrática
-  const a = 0.05; // Esse valor pode ser ajustado conforme necessário
+  const a = -1; // Ajustado para um valor menor, assim a parábola fica mais visível
+  const b = 100 - produto.custo * 2; // A diferença entre o valor final de venda e o custo do produto
+
+  // Cálculo do vértice (quantidade máxima)
+  const qMax = -b / (2 * a); // Quantidade vendida no ponto de lucro máximo
+
+  // Corrigindo o cálculo do lucro máximo com a fórmula correta
+  const lucroMax = a * qMax ** 2 + b * qMax - (1600 + custoFixo); // Lucro no ponto máximo considerando o custo fixo
 
   // Gerando dados para o gráfico
   const generateChartData = () => {
     const data = [];
     for (let q = 0; q <= produto.estoque; q++) {
-      const lucro = produto.valorFinal * q - (produto.custo * q + a * q ** 2);
+      // Aplicando a fórmula de lucro ajustada
+      const lucro = a * q ** 2 + (100 - produto.custo) * q - (1600 + custoFixo);
       data.push(lucro);
     }
     return data;
@@ -32,6 +41,9 @@ export default function ModalProduto({
         data: generateChartData(),
         color: () => `rgba(23, 181, 154, 1)`, // Cor da linha do gráfico
         strokeWidth: 2,
+        withDots: true, // Exibir pontos em cada valor de lucro
+        dotColor: "rgba(23, 181, 154, 1)", // Cor dos pontos
+        dotRadius: 4, // Tamanho dos pontos
       },
     ],
   };
@@ -44,7 +56,7 @@ export default function ModalProduto({
       onRequestClose={() => setModalVisible(false)}
     >
       <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Gráfico de Lucro</Text>
+        <Text style={styles.modalTitle}>Lucro (R$) X Qtd. Vendida</Text>
 
         <LineChart
           data={data}
@@ -62,10 +74,15 @@ export default function ModalProduto({
               fontWeight: "bold",
             },
           }}
-          bezier
         />
 
-        <Text style={styles.axisLabel}>Lucro (R$) X Qtd. Vendida</Text>
+        {/* Exibindo as informações do vértice */}
+        <Text style={styles.vertexLabel}>
+          Quantidade Máxima de Vendas: {qMax.toFixed(2)}
+        </Text>
+        <Text style={styles.vertexLabel}>
+          Lucro Máximo: R$ {lucroMax.toFixed(2)}
+        </Text>
 
         <TouchableOpacity
           style={styles.closeButton}

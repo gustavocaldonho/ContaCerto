@@ -41,11 +41,13 @@ export default StyleSheet.create({
     position: "absolute",
     backgroundColor: "#fff",
     top: 10,
-    right: 10,
+    right: 15,
     padding: 5,
   },
-  axisLabel: {
-    marginTop: 20,
-    fontSize: 15,
+  vertexLabel: {
+    fontSize: 12,
+    fontWeight: "normal",
+    color: "#107E6C",
+    marginTop: 10,
   },
 });
