@@ -6,9 +6,11 @@ import styles from "./style";
 import BoxHilight from "./src/componentes/BoxHilight";
 import BoxMinusPlus from "./src/componentes/BoxMinusPlus";
 import ModalProduto from "./src/componentes/Modal";
+import ModalGrafico from "./src/componentes/ModalGrafico";
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalGraficoVisible, setModalGraficoVisible] = useState(false);
   const [listProdutos, setListProdutos] = useState([
     {
       id: 1,
@@ -165,7 +167,15 @@ export default function App() {
           setProduto({});
         }}
       >
-        <Text style={styles.textAdd}>Adicionar Produto</Text>
+        <Text style={styles.textAdd}>+ Produto</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.buttonGrafico}
+        onPress={() => {
+          setModalGraficoVisible(true);
+        }}
+      >
+        <Text style={styles.textAdd}>Ver Gráfico</Text>
       </TouchableOpacity>
 
       <ModalProduto
@@ -175,6 +185,11 @@ export default function App() {
         setListProdutos={setListProdutos}
         produto={produto}
         atualizarProduto={atualizarProduto}
+      />
+      <ModalGrafico
+        modalVisible={modalGraficoVisible}
+        setModalVisible={setModalGraficoVisible}
+        produto={produto}
       />
     </SafeAreaView>
   );
