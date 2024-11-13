@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Text, View, SafeAreaView, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Picker } from "@react-native-picker/picker";
 import styles from "./style";
@@ -106,8 +112,13 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#17B59A" />
-      <Text style={styles.title}>ContaCerto</Text>
-
+      <View style={styles.boxTitle}>
+        <Text style={styles.title}>ContaCerto</Text>
+        <Image
+          source={require("./src/images/check.png")}
+          style={styles.imgCheck}
+        />
+      </View>
       <Picker
         selectedValue={selectedProduct}
         onValueChange={(itemValue) => {

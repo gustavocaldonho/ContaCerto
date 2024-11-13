@@ -8,11 +8,21 @@ const styles = StyleSheet.create({
     marginTop: 50,
     paddingHorizontal: 20,
   },
+  boxTitle: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 2,
+  },
   title: {
-    fontSize: 35,
+    fontSize: 38,
     fontWeight: "700",
     color: "#117E6C",
     marginVertical: 10,
+  },
+  imgCheck: {
+    width: 30,
+    height: 30,
   },
   picker: {
     width: "100%",
