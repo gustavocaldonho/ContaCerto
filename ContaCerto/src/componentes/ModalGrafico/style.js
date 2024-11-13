@@ -45,7 +45,7 @@ export default StyleSheet.create({
     padding: 5,
   },
   vertexLabel: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: "normal",
     color: "#107E6C",
     marginTop: 10,
